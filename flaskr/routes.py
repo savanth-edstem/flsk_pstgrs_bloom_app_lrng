@@ -1,14 +1,16 @@
-from flask import request, jsonify, abort
-from flaskr import app, db
+from flask import request, jsonify, abort, Blueprint
+from flaskr.extensions import db
 from flaskr.modals import UserModel
 
+main = Blueprint('main', __name__)
 
-@app.route('/')
+
+@main.route('/')
 def hello():
     return "Hello World"
 
 
-@app.route('/user', methods=['POST'])
+@main.route('/user', methods=['POST'])
 def add_details_of_user():
     if (
             not request.json
@@ -21,7 +23,7 @@ def add_details_of_user():
     return "success"
 
 
-@app.route('/user', methods=['GET'])
+@main.route('/user', methods=['GET'])
 def details_of_user():
     all_users = UserModel.query.all()
     results = [{"name": user.name,
@@ -32,7 +34,7 @@ def details_of_user():
     return jsonify(results)
 
 
-@app.route('/user/<user_id>', methods=['GET'])
+@main.route('/user/<user_id>', methods=['GET'])
 def single_user(user_id):
     user = UserModel.query.get_or_404(user_id)
     response = {"name": user.name,
@@ -41,7 +43,7 @@ def single_user(user_id):
     return jsonify(response)
 
 
-@app.route('/user/<user_id>', methods=['POST'])
+@main.route('/user/<user_id>', methods=['POST'])
 def update_user(user_id):
     user = UserModel.query.get_or_404(user_id)
     body = request.json
@@ -53,7 +55,7 @@ def update_user(user_id):
     return "successfully updated"
 
 
-@app.route('/user/<user_id>', methods=['DELETE'])
+@main.route('/user/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
     user = UserModel.query.get_or_404(user_id)
     db.session.delete(user)
